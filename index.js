@@ -2,7 +2,7 @@ const { createBareServer } = require("@tomphttp/bare-server-node");
 const http = require("http");
 const os = require("os");
 
-const bare = createBareServer("/bare/");
+const bare = createBareServer("/edu/");
 const server = http.createServer();
 
 server.on("request", (req, res) => {
