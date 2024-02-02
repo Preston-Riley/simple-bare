@@ -1,45 +1,32 @@
-const { createBareServer } = require("@tomphttp/bare-server-node");
-const http = require("http");
-const os = require("os");
+/* eslint-disable @typescript-eslint/no-var-requires */
+const http = require('node:http');
+const { createBareServer } = require('@tomphttp/bare-server-node');
 
-const bare = createBareServer("/edu/");
-const server = http.createServer();
+const httpServer = http.createServer();
 
-server.on("request", (req, res) => {
-  bare.routeRequest(req, res);
+const bareServer = createBareServer('/');
+
+httpServer.on('request', (req, res) => {
+	if (bareServer.shouldRoute(req)) {
+		bareServer.routeRequest(req, res);
+	} else {
+		res.writeHead(400);
+		res.end('Not found.');
+	}
 });
 
-server.on("upgrade", (req, socket, head) => {
-  bare.routeUpgrade(req, socket, head);
+httpServer.on('upgrade', (req, socket, head) => {
+	if (bareServer.shouldRoute(req)) {
+		bareServer.routeUpgrade(req, socket, head);
+	} else {
+		socket.end();
+	}
 });
 
-let port = parseInt(process.env.PORT || "");
-
-if (isNaN(port)) port = 8080;
-
-server.on("listening", () => {
-  const address = server.address();
-
-  console.log("Listening on:");
-  console.log(`\thttp://localhost:${address.port}`);
-  console.log(`\thttp://${os.hostname()}:${address.port}`);
-  console.log(
-    `\thttp://${
-      address.family === "IPv6" ? `[${address.address}]` : address.address
-    }:${address.port}`
-  );
+httpServer.on('listening', () => {
+	console.log('HTTP server listening');
 });
 
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
-
-function shutdown() {
-  console.log("SIGTERM signal received: closing HTTP server");
-  server.close();
-  bare.close();
-  process.exit(0);
-}
-
-server.listen({
-  port,
+httpServer.listen({
+	port: 8080,
 });
