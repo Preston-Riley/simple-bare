@@ -1,32 +1,15 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const http = require('node:http');
-const { createBareServer } = require('@tomphttp/bare-server-node');
-
-const httpServer = http.createServer();
-
-const bareServer = createBareServer('/');
-
-httpServer.on('request', (req, res) => {
-	if (bareServer.shouldRoute(req)) {
-		bareServer.routeRequest(req, res);
-	} else {
-		res.writeHead(400);
-		res.end('Not found.');
+{
+	"versions": [
+		"v1",
+		"v2",
+		"v3"
+	],
+	"language": "NodeJS",
+	"memoryUsage": 47.42,
+	"project": {
+		"name": "bare-server-node",
+		"description": "TOMPHTTP NodeJS Bare Server",
+		"repository": "https://github.com/tomphttp/bare-server-node",
+		"version": "2.0.1"
 	}
-});
-
-httpServer.on('upgrade', (req, socket, head) => {
-	if (bareServer.shouldRoute(req)) {
-		bareServer.routeUpgrade(req, socket, head);
-	} else {
-		socket.end();
-	}
-});
-
-httpServer.on('listening', () => {
-	console.log('HTTP server listening');
-});
-
-httpServer.listen({
-	port: 8080,
-});
+}
